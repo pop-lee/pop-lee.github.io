@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang='default'>
+
+<head>
+  <meta name="generator" content="Hexo 6.3.0">
+  <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.18.5">
+  <meta charset="utf-8">
+  
+
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  <link rel='dns-prefetch' href='https://gcore.jsdelivr.net'>
+  <link rel="preconnect" href="https://gcore.jsdelivr.net" crossorigin>
+  <link rel='dns-prefetch' href='//unpkg.com'>
+
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" content="#f8f8f8">
+  
+  <title>以太坊源码阅读——第一篇 - LiYunpeng's Blog</title>
+
+  
+    <meta name="description" content="以太坊源码阅读笔记——第一篇本系列文章，用来记录学习和理解以太坊源码的过程笔记，欢迎交流与共同学习。作为一个10余年的老Coder，最近开始学习Golang，并尝试阅读以太坊的源码来试图理解区块链技术的运行原理。特此记录阅读笔记。作为第一篇，在阅读以太坊源码之前，先尝试着从一个区块链小白的角度，按照自己的理解来解释，什么是区块链，如何理解区块链，让刚接触或未接触区块链的朋友们有个快速理解。 关于W">
+<meta property="og:type" content="article">
+<meta property="og:title" content="以太坊源码阅读——第一篇">
+<meta property="og:url" content="http://yoursite.com/2023/02/20/%E4%BB%A5%E5%A4%AA%E5%9D%8A%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E2%80%94%E2%80%94%E7%AC%AC%E4%B8%80%E7%AF%87/index.html">
+<meta property="og:site_name" content="LiYunpeng&#39;s Blog">
+<meta property="og:description" content="以太坊源码阅读笔记——第一篇本系列文章，用来记录学习和理解以太坊源码的过程笔记，欢迎交流与共同学习。作为一个10余年的老Coder，最近开始学习Golang，并尝试阅读以太坊的源码来试图理解区块链技术的运行原理。特此记录阅读笔记。作为第一篇，在阅读以太坊源码之前，先尝试着从一个区块链小白的角度，按照自己的理解来解释，什么是区块链，如何理解区块链，让刚接触或未接触区块链的朋友们有个快速理解。 关于W">
+<meta property="og:locale">
+<meta property="og:image" content="https://gitee.com/liyunpeng/ETH-source-study/raw/main/00%20%E5%BC%80%E5%A7%8B/Web3&Web2.png">
+<meta property="article:published_time" content="2023-02-20T14:55:13.000Z">
+<meta property="article:modified_time" content="2023-02-21T07:53:19.000Z">
+<meta property="article:author" content="LiYunpeng">
+<meta property="article:tag" content="区块链 - 以太坊">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/liyunpeng/ETH-source-study/raw/main/00%20%E5%BC%80%E5%A7%8B/Web3&Web2.png">
+  
+  
+
+  <!-- feed -->
+  
+
+  
+    
+<link rel="stylesheet" href="/css/main.css">
+
+  
+
+  
+
+  
+
+  
+
+
+  
+</head>
+
+<body>
+  
+
+
+
+
+  <div class='l_body' id='start'>
+    <aside class='l_left' layout='post'>
+    
+
+  
+
+<header class="header"><div class="logo-wrap"><a class="title" href="/"><div class="main" ff="title">LiYunpeng's Blog</div></a></div>
+
+<nav class="menu dis-select"></nav>
+</header>
+
+
+<div class="widgets">
+<widget class="widget-wrapper search"><div class="widget-body"><div class="search-wrapper" id="search"><form class="search-form"><input type="text" class="search-input" id="search-input" data-filter="/blog/" placeholder="文章搜索"><svg t="1670596976048" class="icon search-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2676" width="200" height="200"><path d="M938.2 832.6L723.8 618.1c-2.5-2.5-5.3-4.4-7.9-6.4 36.2-55.6 57.3-121.8 57.3-193.1C773.3 222.8 614.6 64 418.7 64S64 222.8 64 418.6c0 195.9 158.8 354.6 354.6 354.6 71.3 0 137.5-21.2 193.2-57.4 2 2.7 3.9 5.4 6.3 7.8L832.5 938c14.6 14.6 33.7 21.9 52.8 21.9 19.1 0 38.2-7.3 52.8-21.8 29.2-29.1 29.2-76.4 0.1-105.5M418.7 661.3C284.9 661.3 176 552.4 176 418.6 176 284.9 284.9 176 418.7 176c133.8 0 242.6 108.9 242.6 242.7 0 133.7-108.9 242.6-242.6 242.6" p-id="2677"></path></svg></form><div id="search-result"></div><div class="search-no-result">No Results!</div></div></div></widget>
+
+
+<widget class="widget-wrapper toc single" id="data-toc"><div class="widget-header cap dis-select"><span class="name">以太坊源码阅读——第一篇</span></div><div class="widget-body fs14"><div class="doc-tree active"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E4%BA%8EWeb3%E3%80%81%E5%8C%BA%E5%9D%97%E9%93%BE%E3%80%81%E6%AF%94%E7%89%B9%E5%B8%81%E4%B9%8B%E9%97%B4%E6%98%AF%E4%BB%80%E4%B9%88%E5%85%B3%E7%B3%BB"><span class="toc-text">关于Web3、区块链、比特币之间是什么关系</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A6%82%E4%BD%95%E7%90%86%E8%A7%A3%E5%8C%BA%E5%9D%97%E9%93%BE"><span class="toc-text">如何理解区块链</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8C%BA%E5%9D%97%E9%93%BE%E8%A7%A3%E5%86%B3%E4%BA%86%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98%EF%BC%8C%E5%AD%98%E5%9C%A8%E7%9A%84%E4%BB%B7%E5%80%BC%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-text">区块链解决了什么问题，存在的价值是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%A5%E5%A4%AA%E5%9D%8A%E6%98%AF%E4%BB%80%E4%B9%88"><span class="toc-text">以太坊是什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E5%85%AC%E9%93%BE%E3%80%81%E7%A7%81%E9%93%BE%E3%80%81%E8%81%94%E7%9B%9F%E9%93%BE"><span class="toc-text">关于公链、私链、联盟链</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8E%BB%E4%B8%AD%E5%BF%83%E5%8C%96%E7%9A%84%E6%9B%B4%E5%A4%9A%E6%80%9D%E8%80%83"><span class="toc-text">去中心化的更多思考</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E4%BB%A5%E5%A4%AA%E5%9D%8A%E7%9A%84%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB"><span class="toc-text">关于以太坊的源码阅读</span></a></li></ol></div></div></widget>
+
+
+
+
+</div>
+
+
+    </aside>
+    <div class='l_main'>
+      
+
+      
+
+
+
+<div class="bread-nav fs12"><div id="breadcrumb"><a class="cap breadcrumb" href="/">Home</a><span class="sep"></span><a class="cap breadcrumb" href="/">Blog</a><span class="sep"></span><a class="cap breadcrumb-link" href="/categories/%E4%BB%A5%E5%A4%AA%E5%9D%8A%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/">以太坊源码阅读笔记</a></div><div id="post-meta">Posted on&nbsp;<time datetime="2023-02-20T14:55:13.000Z">2023-02-20</time></div></div>
+
+<article class='md-text content post'>
+<h1 class="article-title"><span>以太坊源码阅读——第一篇</span></h1>
+<h1 id="以太坊源码阅读笔记——第一篇"><a href="#以太坊源码阅读笔记——第一篇" class="headerlink" title="以太坊源码阅读笔记——第一篇"></a>以太坊源码阅读笔记——第一篇</h1><p>本系列文章，用来记录学习和理解以太坊源码的过程笔记，欢迎交流与共同学习。<br>作为一个10余年的老Coder，最近开始学习Golang，并尝试阅读以太坊的源码来试图理解区块链技术的运行原理。特此记录阅读笔记。<br>作为第一篇，在阅读以太坊源码之前，先尝试着从一个区块链小白的角度，按照自己的理解来解释，什么是区块链，如何理解区块链，让刚接触或未接触区块链的朋友们有个快速理解。</p>
+<h2 id="关于Web3、区块链、比特币之间是什么关系"><a href="#关于Web3、区块链、比特币之间是什么关系" class="headerlink" title="关于Web3、区块链、比特币之间是什么关系"></a>关于Web3、区块链、比特币之间是什么关系</h2><p>先了解下这几个概念分别是什么，再看他们之间的关系</p>
+<ul>
+<li>Web3，是相对于Web1.0和Web2.0来说的<ul>
+<li>Web1.0，被称为“只读网络”，当然这个说法并不绝对，更多的体现为用户通过网站等形式，单向的获取信息；</li>
+<li>Web2.0，被称为“参与式网络”，随着博客、微博等产品的兴起，到现在的抖音、朋友圈，用户从单向获取信息变成了人人可参与、发布、评论等互动形式的网络；</li>
+<li>Web3.0，被称为“去中心化网络”，这里对应的即是Web2.0即以前的属于中心化网络。<ul>
+<li>中心化网络<ul>
+<li>用户发布的数据归属于这些产品所属公司的，例如微信朋友圈属于腾讯的、抖音属于字节跳动的，他们有对账号及对应数据的生杀大权，并且随着公司的经营状况（例如公司倒闭或被收购），对应的数据也有可能注销删除、丢失、销毁等（例如曾经火爆的国产Facebook——人人网）。</li>
+<li>另一方面这些数据对于系统的管理原来将是可以进行修改及删除等操作的，虽然这些大公司有着严格的权限控制和审核管理机制，但单从技术角度是属于“中心化管理”的。</li>
+</ul>
+</li>
+<li>去中心化网络<ul>
+<li>即是网络中的数据并非由公司所有，而是所有参与者共有（这里面会涉及到另外一个概念公链、联盟链及私链，下边会另行介绍），没有所谓的“中心”组织机构来对数据做干预，同时这些数据也就不受公司经营情况的影响</li>
+<li>既然没有中心化组织，那么从技术上看数据就不可被窜改，因为数据不归属于任何一个组织，这种共有机制保障了数据防篡改的安全性</li>
+<li>在中心化网络的基础之上，各家公司在此上层来构建应用，形成底层数据的共享和持久化，用户个人的数据归属于每个用户自己所有，大家共同遵循着同样的规则，形成一套自治的理想化的环境（当然，并没有绝对的安全，绝对的理想）</li>
+<li>在末尾会有<a href="#%E5%8E%BB%E4%B8%AD%E5%BF%83%E5%8C%96%E7%9A%84%E6%9B%B4%E5%A4%9A%E6%80%9D%E8%80%83">关于去中心化的更多思考</a></li>
+</ul>
+</li>
+<li><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="https://gitee.com/liyunpeng/ETH-source-study/raw/main/00%20%E5%BC%80%E5%A7%8B/Web3&Web2.png" alt="Web2与Web3的直观比较"></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>区块链，作为一项实现去中心化机制的技术，或者理解为一种计数架构思想；</li>
+<li>比特币，可能大多数人听说区块链是通过比特币，而比特币是用区块链这种技术来搭建出的产品。</li>
+</ul>
+<p>总结一下，Web3是宏观上的去中心化网络基础概念，区块链是Web3的一种技术，比特币则是使用区块链技术构建的平台应用。</p>
+<h2 id="如何理解区块链"><a href="#如何理解区块链" class="headerlink" title="如何理解区块链"></a>如何理解区块链</h2><p>我们先暂时浅显的拆开来理解“区块”和“链”，“区块”是存储数据的形式，“链”是一种可以看做链表的结构。</p>
+<h2 id="区块链解决了什么问题，存在的价值是什么"><a href="#区块链解决了什么问题，存在的价值是什么" class="headerlink" title="区块链解决了什么问题，存在的价值是什么"></a>区块链解决了什么问题，存在的价值是什么</h2><p>上面我们提到关于Web2和Web3的区别，中心化与去中心化，那么这里更深层次上看，是一种安全机制的差别。以下我尝试着用一个故事来表述。</p>
+<p>前提，账本是一本一本的记，每一本都是基于前一本的账单，追加的记账。</p>
+<p>每桌客人买单结账的记录，都会让每层楼的管家知道，也就是每笔账都会在所有楼层的账本中记录。</p>
+<p>有一家很大的饭庄，有5层楼大，有一名管家专门来负责记账。</p>
+<ul>
+<li>问题1，假如账记错了怎么办？<br>尝试解决，在一本完整的账记完之后，需要封账，拿着对应的票据进行对账，来明确与实际是否有出入。</li>
+<li>问题2，每桌客人结账都是通过这名管家记到账本上，那么这个管家就对账本有绝对的控制权，假如管家拿出一部分进入了掌柜自己的口袋，并没有记在账上也不会有人知道的。<br>尝试解决，我们假定饭庄的5层楼，每层楼都安放一名管家，每当有客人结账的时候，对应楼层的管家将收入记到账本中，同时另外4层的管家对应的账单，也就是5名管家都会将消费记到各自的账本中，当记满了一本的时候，与另外4名管家进行对账，来解决一名管家对账目有绝对控制权的问题，其余的4名管家起到了监督的作用。那么有人会问，增加了4名管家是需要成本的，这个我们会在末尾的“以太坊是什么”中做进一步的解释。</li>
+<li>问题3，5名管家记的账，有差异怎么办呢？以谁的为准？<br>尝试解决，饭庄的老板给大家约定好遵循一个原则，少数服从多数，当5名管家中超过3名管家以上记的账一致，那么则以这个结果为准。 </li>
+<li>问题4，如果其中一名管家买通了另外的其中两名，再私下的给一定的好处，就可以伪造账目，让错误的账被认定为是正确的账。如何解决呢？<br>尝试解决<ul>
+<li>1、当发现造假的话，会有严重的惩罚作为威慑，</li>
+<li>2、管家是通过一定难度的考验而选出来的，例如先做店小二，评价最好的店小二才能够作为管家记账，还有就是深受老板的信赖。</li>
+<li>3、管家可以轮换，这样来达到不会始终由某几个管家之间达成私下的操作来提升造假成本。</li>
+<li>4、对于记账的管家有一定的奖励，而减少通过歪门邪道的方式来获取利益。</li>
+<li>5、当饭庄开的越来越大，负责记账的管家越来越多，那么需要收买的管家的难度也就越来越大，比如从5个管家需要至少有3个记账保持一致，当有50个管家的时候需要至少有26个记账保持一致。</li>
+<li>6、每本账所记录的交易金额或者记账的时间范围做限定，这样从每本账的总额上也就有了限制，那么即便造假所能获得的收益也不会很高。<br>其实从本质上并不能完全的杜绝，而出发点就是尽量提升造假成本，甚至于造假所付出的成本比获得的收益还要大，那么造假就失去了意义。</li>
+</ul>
+</li>
+<li>问题5，每个管家负责各自楼层的账目，这是一个各自记账的过程，也就会有可能出现不同楼层同时记完了一本账的情况，而每层楼的管家会优先把自己楼层的消费记到账里，这时候就出现了不同楼层的账本内容出现了分叉，那么要以哪本账为准呢？  尝试解决，记完账后彼此的账目内容是需要交换的，并且需要进行对账验证，而这都是需要时间的，那么在对账完成之前有了新的客人来吃饭结账，依然是需要继续记账的，所以在这个阶段同时记完的账暂时都被认为是待定的账本暂时搁置，各自楼层会基于自己的账本再记录新的账本，而我们为这样的情况设定一个限度，例如1楼的待定的账本已经累加到了3本，那么通知其他2、3、4、5楼层，这里的账记的最快，最先达到数目的，那么以1楼的账本为主记录后续的账，其他楼层的待定账本作废，进行对账销账后，最终达成一致以1楼账本为准继续记录，其他楼层的消费如果没有在这些账本中的，会被保留记录到后续的账本中做追加。</li>
+</ul>
+<p>通过以上的例子，可以大概了解，这里面的核心问题是解决伪造的账，不受信任的问题。而上面关于Web2.0的描述，我们生活中中心化的App数据其实是可以被窜改，删除等情况的。数据归属也并非属于用户自己，这就是区块链技术在致力解决的问题。</p>
+<p>将上面的案例对应到区块链技术中的概念（后续会对每个区块链中的概念做详细描述）。</p>
+<ul>
+<li>账本中的消费记录，对应了数据。</li>
+<li>完成一本账的记录，对应了一个区块。</li>
+<li>追加方式的流水账，对应了将区块形成链。</li>
+<li>对账与票据的对账，对应了区块链中的数据做签名验证。</li>
+<li>管家间的互相监督，对应了去中心化的分布式节点。</li>
+<li>不同账本间一致性，对应了区块链的权威数据认定。</li>
+<li>管家的选拔与考核，对应了区块链的共识机制，对应了挖矿难度等，例如最早的POW（工作量证明）、POS（权益证明）、POA（权威证明） ，管家等同于运行区块链程序的节点，管家的数量越多，造假难度越大。</li>
+<li>对管家的开放选拔，考核，即是区块链中的共识机制，</li>
+<li>每本帐的大小限制，对应了交易总额的限制、燃料值的限制等。</li>
+<li>待确定的账本数量，对应了最长链原则。</li>
+</ul>
+<h2 id="以太坊是什么"><a href="#以太坊是什么" class="headerlink" title="以太坊是什么"></a>以太坊是什么</h2><p>从两种视角来看，首先以太坊是个平台应用，与此同时也可以用来形容平台所运行的核心程序，作为完备功能的区块链框架，在此基础之上还可以做二次开发，衍生出来很多不同规则的区块链应用。</p>
+<p>和上面提到比特币一样，以太坊同样是利用区块链技术的搭建的平台，通过区块来记录存储数据，而搭建这样的平台是需要成本的，就如上面例子中的多名管家要比一名管家付出更多的成本。<br>类似于以太坊和比特币这样的平台，是建立了一套生态的平衡体系，由利益所驱使各方投入共同建立维护公共的区块链网络（公链）。<br>App满足用户的个人需求，产生了价值，用户愿意付费或类似于现在互联网中广告，等生态来形成生态链。<br>App、网络应用要使用链来存储数据，做数据处理等等操作来满足业务需求，则需要支付费用，就像汽车行走需要汽油作为燃料，引出gas费（燃料费），这些燃料费会作为奖励发给提供数据存储，参与网络建设的节点们，即矿工程序（案例中参与竞选项成为管家的人），矿工程序通过工作量证明机制，通过运算来竞选记账权，最先计算出一道题的结果则有权记账，而产生区块即刻获得对应奖励（仅大概描述，细节的奖励分配在源码阅读中进行详细描述）<br>用户越多，链所产生的价值就越高，需要的矿工节点就越多，奖励矿工的价值收益就越高，而矿工节点越多，链的安全性和价值就越高，形成一个生态循环，当然，这个生态还远不止如此，目前主流的矿工都是通过运算来争取记账权，也就产生了显卡等设备的资源竞争，同样数据存储也需要芯片制造，晶圆制造，物流运输，贸易管控等众多因素而影响显示世界的价值生态。<br>而对于平台给用户带来的价值，以一种代币化的形式所体现，平台对用户来讲越有价值，代币就越有价值，这就是以太币，比特币能够锚定货币的主要原因。</p>
+<h2 id="关于公链、私链、联盟链"><a href="#关于公链、私链、联盟链" class="headerlink" title="关于公链、私链、联盟链"></a>关于公链、私链、联盟链</h2><ul>
+<li>公链，通过名称我们就可以直观的了解到，公链即是公有链，也就是完全开放，任何人如果想参与其中，都可以启动节点加入到公链当中，属于完全去中心化的。  </li>
+<li>私链，则与公链相反，它其实属于中心化的管理控制，仅仅是技术上使用了区块链的方式来运行和存储，但从归属权和控制权角度，是归属于某个公司，或者是某个组织机构的。</li>
+<li>联盟链，则是介于去中心化与中心化之间的存在，是由多个公司或组织共同维护搭建，来达到一个半开放的状态，属于联合管控，只有经过授权才可以加入和管理链中的节点。</li>
+</ul>
+<p>完全去中心化的环境其实也有它的弊端，那就是隐秘性太强，导致很多违法分子通过这种私密的网络环境做一些不法的事，难易追踪和管理。也正因如此才有了类似于联盟链这种半中心化的产物。当然并不是说去中心化就完全不可追踪，其实本质上是缺少了账户与实名之间的映射关系，只要补全依然是可以达到追踪的目的。而当一个联盟足够大，我们可以从另一种角度来认为它是对公共开放的，只是作为一种基础建设而存在供大众所使用，只是部署运行的程序受到中心化的管理控制，这样和公链的差别也就没有那么大了。</p>
+<h2 id="去中心化的更多思考"><a href="#去中心化的更多思考" class="headerlink" title="去中心化的更多思考"></a>去中心化的更多思考</h2><p>上面讲到Web3.0以及区块链在围绕去中心化的思想，这种公有网络是人人可以参与的，并且数据最终归属于用户个人所有，伴随着DAO（Decentralized Autonomous Organization）这种去中心化自治组织的产生，更多“自治”也许是Web3的更长远目标，所有智能设备的去中心化互联，结合人工智能AI参与其中，让更多事是按照“合约规则”来进行，虚拟现实与增强现实打造的新的世界让人有无限的遐想，也许这就是Web3现在很火，但又让人觉得很虚无缥缈，感觉是一个漫长又遥远的路吧</p>
+<h2 id="关于以太坊的源码阅读"><a href="#关于以太坊的源码阅读" class="headerlink" title="关于以太坊的源码阅读"></a>关于以太坊的源码阅读</h2><p>以太坊源码，我会拆分成如下模块进行笔记编写。</p>
+<ul>
+<li>存储篇</li>
+<li>账户篇</li>
+<li>状态管理篇</li>
+<li>交易篇</li>
+<li>挖矿篇</li>
+<li>链维护篇</li>
+<li>EVM篇</li>
+<li>共识篇</li>
+<li>算法篇</li>
+</ul>
+<p>而本系列笔记，将尽可能的减少涉及币圈和业务层的东西，更多专注在以太坊技术上</p>
+<p>欢迎多多交流，共同学习</p>
+
+
+<div class="article-footer reveal fs14"><section id="license"><div class="header"><span>License</span></div><div class="body"><p>本文采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">署名-非商业性使用-相同方式共享 4.0 国际</a> 许可协议，转载请注明出处。</p>
+</div></section></div>
+
+</article>
+
+<div class="related-wrap reveal" id="read-next"><section class="body"><div class="item" id="prev"></div><div class="item" id="next"><div class="note">Older</div><a href="/2018/12/15/%E5%AE%89%E8%A3%85%E5%9F%BA%E4%BA%8EHelo%E5%92%8CGithub-Page%E7%9A%84%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/">安装基于Hexo和Github Page的个人博客</a></div></section></div>
+
+
+
+
+
+
+
+
+      
+<footer class="page-footer reveal fs12"><hr><div class="text"><p>本站由 <a href="/">@anonymity</a> 使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar">Stellar</a> 主题创建。<br>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
+</div></footer>
+
+      <div class='float-panel mobile-only blur' style='display:none'>
+  <button type='button' class='sidebar-toggle mobile' onclick='sidebar.toggle()'>
+    <svg class="icon" style="width: 1em; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="15301"><path d="M566.407 808.3c26.9-0.1 49.3-20.8 51.6-47.6-1.9-27.7-23.9-49.7-51.6-51.6h-412.6c-28.2-1.4-52.6 19.5-55.5 47.6 2.3 26.8 24.6 47.5 51.6 47.6h416.5v4z m309.3-249.9c26.9-0.1 49.3-20.8 51.6-47.6-2.2-26.8-24.6-47.5-51.6-47.6h-721.9c-27.7-2.8-52.5 17.4-55.3 45.1-0.1 0.8-0.1 1.7-0.2 2.5 0.9 27.2 23.6 48.5 50.7 47.6H875.707z m-103.1-245.9c26.9-0.1 49.3-20.8 51.6-47.6-0.4-28.3-23.2-51.1-51.5-51.6h-618.9c-29.5-1.1-54.3 21.9-55.5 51.4v0.2c1.4 27.8 25.2 49.2 53 47.8 0.8 0 1.7-0.1 2.5-0.2h618.8z" p-id="15302"></path><path d="M566.407 808.3c26.9-0.1 49.3-20.8 51.6-47.6-1.9-27.7-23.9-49.7-51.6-51.6h-412.6c-28.2-1.4-52.6 19.5-55.5 47.6 1.9 27.7 23.9 49.7 51.6 51.6h416.5z m309.3-249.9c26.9-0.1 49.3-20.8 51.6-47.6-2.2-26.8-24.6-47.5-51.6-47.6h-721.9c-27.7-2.8-52.5 17.4-55.3 45.1-0.1 0.8-0.1 1.7-0.2 2.5 0.9 27.2 23.6 48.5 50.7 47.6H875.707z m-103.1-245.9c26.9-0.1 49.3-20.8 51.6-47.6-0.4-28.3-23.2-51.1-51.5-51.6h-618.9c-29.5-1.1-54.3 21.9-55.5 51.4v0.2c1.4 27.8 25.2 49.2 53 47.8 0.8 0 1.7-0.1 2.5-0.2h618.8z" p-id="15303"></path></svg>
+  </button>
+</div>
+
+    </div>
+  </div>
+  <div class='scripts'>
+    <script type="text/javascript">
+  const stellar = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    loadCSS: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    // 从 butterfly 和 volantis 获得灵感
+    loadScript: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      if (src.startsWith('/')){
+        src = stellar.config.root + src.substring(1);
+      }
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    // https://github.com/jerryc127/hexo-theme-butterfly
+    jQuery: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        stellar.loadScript(stellar.plugins.jQuery).then(fn)
+      } else {
+        fn()
+      }
+    }
+  };
+  stellar.version = '1.18.5';
+  stellar.github = 'https://github.com/xaoxuu/hexo-theme-stellar/tree/1.18.5';
+  stellar.config = {
+    date_suffix: {
+      just: 'Just',
+      min: 'minutes ago',
+      hour: 'hours ago',
+      day: 'days ago',
+      month: 'months ago',
+    },
+    root : '/',
+  };
+
+  // required plugins (only load if needs)
+  stellar.plugins = {
+    jQuery: 'https://gcore.jsdelivr.net/npm/jquery@3.6.2/dist/jquery.min.js'
+  };
+
+  if ('local_search') {
+    stellar.search = {};
+    stellar.search.service = 'local_search';
+    if (stellar.search.service == 'local_search') {
+      let service_obj = Object.assign({}, {"field":"all","path":"/search.json","content":true,"sort":"-date"});
+      stellar.search[stellar.search.service] = service_obj;
+    }
+  }
+
+  // stellar js
+  stellar.plugins.stellar = Object.assign({"sites":"/js/plugins/sites.js","friends":"/js/plugins/friends.js","ghinfo":"/js/plugins/ghinfo.js","timeline":"/js/plugins/timeline.js","linkcard":"/js/plugins/linkcard.js","fcircle":"/js/plugins/fcircle.js","weibo":"/js/plugins/weibo.js"});
+
+  stellar.plugins.marked = Object.assign("https://cdn.bootcdn.net/ajax/libs/marked/4.0.18/marked.min.js");
+  // optional plugins
+  if ('true' == 'true') {
+    stellar.plugins.lazyload = Object.assign({"enable":true,"js":"https://gcore.jsdelivr.net/npm/vanilla-lazyload@17.8.3/dist/lazyload.min.js","transition":"blur"});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.swiper = Object.assign({"enable":true,"css":"https://unpkg.com/swiper@8.4.5/swiper-bundle.min.css","js":"https://unpkg.com/swiper@8.4.5/swiper-bundle.min.js"});
+  }
+  if ('' == 'true') {
+    stellar.plugins.scrollreveal = Object.assign({"enable":null,"js":"https://gcore.jsdelivr.net/npm/scrollreveal@4.0.9/dist/scrollreveal.min.js","distance":"8px","duration":500,"interval":100,"scale":1});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.preload = Object.assign({"enable":true,"service":"flying_pages","instant_page":"https://gcore.jsdelivr.net/gh/volantis-x/cdn-volantis@4.1.2/js/instant_page.js","flying_pages":"https://gcore.jsdelivr.net/gh/gijo-varghese/flying-pages@2.1.2/flying-pages.min.js"});
+  }
+  if ('true' == 'true') {
+    stellar.plugins.fancybox = Object.assign({"enable":true,"js":"https://gcore.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.umd.js","css":"https://gcore.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.css","selector":".swiper-slide img"});
+  }
+  if ('false' == 'true') {
+    stellar.plugins.heti = Object.assign({"enable":false,"css":"https://unpkg.com/heti@0.9.2/umd/heti.min.css","js":"https://unpkg.com/heti@0.9.2/umd/heti-addon.min.js"});
+  }
+</script>
+
+<!-- required -->
+
+  
+<script src="/js/main.js" async></script>
+
+
+
+<!-- optional -->
+
+
+
+<!-- inject -->
+
+
+  </div>
+</body>
+</html>
